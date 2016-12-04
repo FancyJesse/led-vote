@@ -90,9 +90,10 @@ The program is continuous, so it will have to be forcefully stopped. (Will chang
 
 Release History
 ---------------
-
+* 0.3.1
+	* Text Fixes
 * 0.3.0
-    * Initial Release
+	* Initial Release
 
 
 License
