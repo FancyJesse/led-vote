@@ -76,8 +76,8 @@ def client_handler(client_conn, client_addr):
 			# receive message
 			client_message = client_conn.recv(1024).decode()
 			client_json = json.loads(client_message)
-			json_type = client_json['type']
-			json_data = client_json['data']
+			client_json_type = client_json['type']
+			client_json_data = client_json['data']
 
 			# json to send
 			server_json = {}
@@ -86,33 +86,33 @@ def client_handler(client_conn, client_addr):
 			server_json['data'] = 'Server Unable to Handle Request'
 
 			# login handler
-			if json_type == 'login':
-				client_logged_in = sqlitemanager.login_user(json_data['username'], json_data['secret'])
+			if client_json_type == 'login':
+				client_logged_in = sqlitemanager.login_user(client_json_data['username'], client_json_data['secret'])
 				server_json['success'] = client_logged_in
 				if client_logged_in:
 					server_json['data'] = 'Login Successful'
 				else:
 					server_json['data'] = 'Invalid Login - Check Username and Password'
-				log(__name__, 'Login User - {} - username:{} - success:{}'.format(client_addr[0], json_data['username'], client_logged_in))
+				log(__name__, 'Login User - {} - username:{} - success:{}'.format(client_addr[0], client_json_data['username'], client_logged_in))
 
 			# register handler
-			elif json_type == 'register':
-				success = sqlitemanager.register_user(json_data['username'], json_data['secret'])
+			elif client_json_type == 'register':
+				success = sqlitemanager.register_user(client_json_data['username'], client_json_data['secret'])
 				server_json['success'] = success
 				if success:
 					server_json['data'] = 'Registration Successful - Please Login'
 				else:
 					server_json['data'] = 'Registration Failed - Username might be taken'
-				log(__name__, 'Register User - {} - username:{} - success:{}'.format(client_addr[0], json_data['username'], success))
+				log(__name__, 'Register User - {} - username:{} - success:{}'.format(client_addr[0], client_json_data['username'], success))
 
 			# system handler
-			elif json_type == 'system' and json_data == 'disconnect':
+			elif client_json_type == 'system' and client_json_data == 'disconnect':
 					client_connected = False
 					server_json['success'] = True
 					server_json['data'] = 'Successfully Disconnected'
 
 			# ladder handler
-			elif json_type == 'ladder':
+			elif client_json_type == 'ladder':
 				all_votes = sqlitemanager.user_vote_count()
 				if all_votes:
 					user_vote_json_list = []
@@ -126,12 +126,12 @@ def client_handler(client_conn, client_addr):
 					server_json['data'] = user_vote_json_list
 
 			# led vote handler - must be logged in
-			elif json_type == 'LED':
+			elif client_json_type == 'LED':
 				if client_logged_in:
-					success = sqlitemanager.vote(json_data['username'], json_data['ledID'])
+					success = sqlitemanager.vote(client_json_data['username'], client_json_data['ledID'])
 					server_json['success'] = success
 					if success:
-						Thread(target=ledmanager.blink, args=(json_data['ledID'],)).start()
+						Thread(target=ledmanager.blink, args=(client_json_data['ledID'],)).start()
 						led_vote_count_json = {}
 						vote_count = sqlitemanager.led_vote_count()
 						led_vote_count_json['ledRed'] = vote_count[0]
@@ -159,7 +159,6 @@ def client_handler(client_conn, client_addr):
 
 def start():
 	global TIME_STARTED, SERVER_SOCKET, SERVER_HOSTNAME
-
 
 	log(__name__, 'Server Online - {}@{}:{}'.format(SERVER_HOSTNAME , config.SERVER_ADDRESS, config.SERVER_PORT))
 	SERVER_SOCKET.listen(5)

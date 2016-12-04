@@ -1,8 +1,9 @@
 from threading import Lock
 from time import sleep
 
-from logger import log
 import RPi.GPIO as GPIO
+
+from logger import log
 import config
 
 
@@ -29,9 +30,9 @@ def cleanup():
 	log(__name__, 'GPIO Cleaned Up')
 
 
-def blink(ledID):
+def blink(led_id):
 	for led in LED_LIST:
-		if led.id == ledID:
+		if led.id == led_id:
 			led.blink()
 			break
 
