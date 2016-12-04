@@ -31,6 +31,11 @@ Also be sure you have RPi.GPIO package installed
 $ sudo apt-get install rpi.gpio
 ```
 
+Project also requires bcrypt
+```
+$ pip install bcrypt
+```
+
 To download the LED-Vote project use the following:
 
 git
