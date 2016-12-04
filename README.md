@@ -26,7 +26,7 @@ Before the installation, be sure to update & upgrade your current packages
 $ sudo apt-get update && sudo apt-get upgrade
 ```
 
-Also be sure you have RPi.GPIO package installed
+Be sure you have RPi.GPIO package installed
 ```
 $ sudo apt-get install rpi.gpio
 ```

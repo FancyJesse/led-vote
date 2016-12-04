@@ -22,7 +22,7 @@ def init():
 def log(caller, msg):
 	MUTEX.acquire()
 
-	checkDate()
+	check_date()
 	global LOG_NAME
 
 	try:
@@ -41,14 +41,14 @@ def log(caller, msg):
 		MUTEX.release()
 
 
-def checkDate():
+def check_date():
 	global LOG_NAME
 
 	if LOG_NAME != str(datetime.datetime.today().strftime('log_%Y%m%d.txt')):
 		init()
 
 
-def currentLog():
+def current_log():
 	if not os.path.isfile(config.DIR_LOG + LOG_NAME):
 		return False
 	return config.DIR_LOG + LOG_NAME
