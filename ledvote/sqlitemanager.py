@@ -1,5 +1,7 @@
 from threading import Lock
+import os
 import sqlite3
+
 import bcrypt
 
 from logger import log
@@ -16,18 +18,32 @@ def setup():
 
 	try:
 		MUTEX.acquire()
+
+		if config.DIR_DATABASE == None:
+			config.DIR_DATABASE = os.path.expanduser('~') + '/led-vote/database/'
+		if not os.path.exists(config.DIR_DATABASE):
+			os.makedirs(config.DIR_DATABASE)
+
 		DATABASE = sqlite3.connect(config.DIR_DATABASE + 'LED-Vote.db', check_same_thread=False)
 		CURSOR = DATABASE.cursor()
 		CURSOR.execute('CREATE TABLE IF NOT EXISTS user ('
 					'username TEXT PRIMARY KEY COLLATE NOCASE,'
 					'secret TEXT NOT NULL,'
-					'dateCreated INTEGER DEFAULT 0,'
-					'loginCount INTEGER DEFAULT 0,'
-					'lastLogin INTEGER DEFAULT 0,'
-					'ledRed INTEGER DEFAULT 0,'
-					'ledYellow INTEGER DEFAULT 0,'
+					'date_created INTEGER DEFAULT 0,'
+					'login_count INTEGER DEFAULT 0,'
+					'last_login INTEGER DEFAULT 0,'
 					'note TEXT)'
 					)
+
+		# force add led_id columns
+		for led_id in [i[1] for i in config.LED_INFO]:
+			try:
+				query = 'ALTER TABLE user ADD COLUMN {0} INTEGER DEFAULT 0'.format(led_id)
+				CURSOR.execute(query)
+			except:
+				pass
+
+		DATABASE.commit()
 		log(__name__, 'Database Created/Connected')
 	except:
 		raise Exception('{} - Unable to Setup Database'.format(__name__))
@@ -56,7 +72,7 @@ def register_user(username, secret):
 	success = username_available(username)
 	if success:
 		h = bcrypt.hashpw(secret.encode(), bcrypt.gensalt())
-		query = 'INSERT INTO user (username, secret, dateCreated) values (?, ?, DATETIME("now","localtime"))'
+		query = 'INSERT INTO user (username, secret, date_created) values (?, ?, DATETIME("now","localtime"))'
 		CURSOR.execute(query, (username, h))
 		DATABASE.commit()
 	MUTEX.release()
@@ -73,18 +89,18 @@ def login_user(username, secret):
 		h = storedSecret[0]
 		success = bcrypt.hashpw(secret.encode(), h) == h
 		if success:
-			query = 'UPDATE user SET lastLogin=DATETIME("now","localtime"), loginCount=loginCount+1 WHERE username=?'
+			query = 'UPDATE user SET last_login=DATETIME("now","localtime"), login_count=login_count+1 WHERE username=?'
 			CURSOR.execute(query, (username,))
 			DATABASE.commit()
 	MUTEX.release()
 	return success
 
 
-def vote(username, ledID):
+def vote(username, led_id):
 	MUTEX.acquire()
 	success = not username_available(username)
 	if success:
-		query = 'UPDATE user SET {0}={0}+1 WHERE username=?'.format(ledID)
+		query = 'UPDATE user SET {0}={0}+1 WHERE username=?'.format(led_id)
 		CURSOR.execute(query, (username,))
 		DATABASE.commit()
 	MUTEX.release()
@@ -92,20 +108,38 @@ def vote(username, ledID):
 
 
 def led_vote_count():
-	query = 'Select sum(ledRed), sum(ledYellow) FROM user'
-	MUTEX.acquire()
-	CURSOR.execute(query)
-	MUTEX.release()
-	return CURSOR.fetchone()
+	led_vote_dict = {}
+	for led_id in [i[1] for i in config.LED_INFO]:
+		query = 'Select sum({0}) FROM user'.format(led_id)
+		MUTEX.acquire()
+		CURSOR.execute(query)
+		vote_count = CURSOR.fetchone()[0]
+		if vote_count == None:
+			vote_count = 0
+		led_vote_dict[led_id] = vote_count
+		MUTEX.release()
+	return led_vote_dict
 
 
 def user_vote_count(username=None):
-	query = 'Select username, ledRed, ledYellow FROM user'
+	user_vote_dict_list = []
+
+	led_id_list = [i[1] for i in config.LED_INFO]
+	query = 'Select username, {0} FROM user'.format(', '.join(led_id_list))
 	MUTEX.acquire()
+
 	if username:
 		query = query + ' WHERE username=?'
 		CURSOR.execute(query, (username,))
 	else:
 		CURSOR.execute(query)
+
+	for user_info in CURSOR.fetchall():
+		user_dict = {}
+		user_dict['username'] = user_info[0]
+		for led_idx, led_id in enumerate(led_id_list, 1):
+			user_dict[led_id] = user_info[led_idx]
+		user_vote_dict_list.append(user_dict)
+
 	MUTEX.release()
-	return CURSOR.fetchone() if username else CURSOR.fetchall()
+	return user_vote_dict_list

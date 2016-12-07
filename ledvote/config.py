@@ -44,10 +44,17 @@ LED_BLINK_DELAY = 0.2
 #            to identify the correct GPIO pin numbers
 #
 # LED_ID - an ID of your choosing to help identify the LED
-#          Values must be unique from one another
+#          Values must be unique from one another and
+#          must begin with ' led_ ' as this prefix is
+#          checked throughout the script
 # Values must be correctly formatted or will result in errors
 LED_INFO = [
-		(6, 'ledRed'),
-		(4, 'ledYellow'),
+		(5, 'led_red'),
+		(15, 'led_orange'),
+		(22, 'led_yellow'),
+		(23, 'led_green'),
+		(17, 'led_blue'),
+		(18, 'led_cyan'),
+		(4, 'led_purple'),
+		(21, 'led_white'),
 ]
-

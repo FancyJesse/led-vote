@@ -90,10 +90,16 @@ The program is continuous, so it will have to be forcefully stopped. (Will chang
 
 Release History
 ---------------
+* 0.4.0
+	* Adjusted initial setup logic so modules can be loaded individually
+	* Configured database creation logic so new led_id columns are automatically added
+	* Adjusted logic for gathering and sending LED user votes 
+	* Renamed database columns
+	* Renamed variables
 * 0.3.1
-	* Text Fixes
+	* Text fixes
 * 0.3.0
-	* Initial Release
+	* Initial release
 
 
 License

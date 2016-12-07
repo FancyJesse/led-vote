@@ -113,30 +113,20 @@ def client_handler(client_conn, client_addr):
 
 			# ladder handler
 			elif client_json_type == 'ladder':
-				all_votes = sqlitemanager.user_vote_count()
-				if all_votes:
-					user_vote_json_list = []
-					for user_vote in all_votes:
-						user_vote_json = {}
-						user_vote_json['username'] = user_vote[0]
-						user_vote_json['ledRed'] = user_vote[1]
-						user_vote_json['ledYellow'] = user_vote[2]
-						user_vote_json_list.append(user_vote_json)
+				all_user_votes = sqlitemanager.user_vote_count()
+				if all_user_votes:
 					server_json['success'] = True
-					server_json['data'] = user_vote_json_list
+					server_json['data'] = all_user_votes
 
 			# led vote handler - must be logged in
 			elif client_json_type == 'LED':
 				if client_logged_in:
-					success = sqlitemanager.vote(client_json_data['username'], client_json_data['ledID'])
+					success = sqlitemanager.vote(client_json_data['username'], client_json_data['led_id'])
 					server_json['success'] = success
 					if success:
-						Thread(target=ledmanager.blink, args=(client_json_data['ledID'],)).start()
-						led_vote_count_json = {}
-						vote_count = sqlitemanager.led_vote_count()
-						led_vote_count_json['ledRed'] = vote_count[0]
-						led_vote_count_json['ledYellow'] = vote_count[1]
-						server_json['data'] = led_vote_count_json
+						Thread(target=ledmanager.blink, args=(client_json_data['led_id'],)).start()
+						all_led_votes = sqlitemanager.led_vote_count()
+						server_json['data'] = all_led_votes
 					else:
 						server_json['data'] = 'Unable to process vote - Please log out and log in again'
 				else:

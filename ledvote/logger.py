@@ -8,11 +8,17 @@ import config
 LOG_NAME = ''
 MUTEX = Lock()
 
+
 def init():
 	global LOG_NAME
 
 	today = datetime.datetime.today()
 	LOG_NAME = str(today.strftime('log_%Y%m%d.txt'))
+
+	if config.DIR_LOG == None:
+		config.DIR_LOG = os.path.expanduser('~') + '/led-vote/log/'
+	if not os.path.exists(config.DIR_LOG):
+		os.makedirs(config.DIR_LOG)
 
 	if not os.path.exists(config.DIR_LOG + LOG_NAME):
 		with open(config.DIR_LOG + LOG_NAME, 'w') as f:
@@ -20,12 +26,11 @@ def init():
 
 
 def log(caller, msg):
-	MUTEX.acquire()
-
-	check_date()
 	global LOG_NAME
 
+	MUTEX.acquire()
 	try:
+		check_date()
 		with open(config.DIR_LOG + LOG_NAME, 'a') as f:
 			formatedMessage = datetime.datetime.now().strftime(
 				'%Y-%m-%d %H:%M:%S\t{}\t{}\n'.format('{:<15}'.format('[' + caller + ']'), msg))
@@ -36,19 +41,11 @@ def log(caller, msg):
 		init()
 		MUTEX.release()
 		log(caller, msg)
-
-	if MUTEX.locked():
+	finally:
 		MUTEX.release()
 
 
 def check_date():
 	global LOG_NAME
-
 	if LOG_NAME != str(datetime.datetime.today().strftime('log_%Y%m%d.txt')):
 		init()
-
-
-def current_log():
-	if not os.path.isfile(config.DIR_LOG + LOG_NAME):
-		return False
-	return config.DIR_LOG + LOG_NAME
