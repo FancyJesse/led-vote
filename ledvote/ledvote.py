@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from logger import log
 import ledmanager
 import server
