@@ -50,7 +50,7 @@ LED_BLINK_DELAY = 0.2
 # Values must be correctly formatted or will result in errors
 LED_INFO = [
 		(5, 'led_red'),
-		(15, 'led_orange'),
+		(25, 'led_orange'),
 		(22, 'led_yellow'),
 		(23, 'led_green'),
 		(17, 'led_blue'),
