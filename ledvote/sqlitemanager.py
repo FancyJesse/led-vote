@@ -82,16 +82,17 @@ def register_user(username, secret):
 def login_user(username, secret):
 	success = False
 	MUTEX.acquire()
-	query = 'SELECT secret FROM user WHERE username=?'
+	query = 'SELECT username, secret FROM user WHERE username=?'
 	CURSOR.execute(query, (username,))
-	storedSecret = CURSOR.fetchone()
-	if storedSecret:
-		h = storedSecret[0]
+	storedData = CURSOR.fetchone()
+	if storedData:
+		h = storedData[1]
 		success = bcrypt.hashpw(secret.encode(), h) == h
 		if success:
 			query = 'UPDATE user SET last_login=DATETIME("now","localtime"), login_count=login_count+1 WHERE username=?'
 			CURSOR.execute(query, (username,))
 			DATABASE.commit()
+			success = storedData[0]
 	MUTEX.release()
 	return success
 

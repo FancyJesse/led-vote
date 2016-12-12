@@ -71,6 +71,7 @@ def client_handler(client_conn, client_addr):
 	try:
 		client_logged_in = False
 		client_connected = True
+
 		while client_connected:
 
 			# receive message
@@ -85,12 +86,34 @@ def client_handler(client_conn, client_addr):
 			server_json['success'] = False
 			server_json['data'] = 'Server Unable to Handle Request'
 
+			# system handler
+			if client_json_type == 'system':
+				if client_json_data == 'ping':
+					server_json['success'] = True
+					server_json['data'] = 'ping'
+				elif client_json_data == 'up_time':
+					server_json['success'] = True
+					server_json['data'] = get_up_time()
+				elif client_json_data == 'disconnect':
+					client_connected = False
+					server_json['success'] = True
+					server_json['data'] = 'Successfully Disconnected'
+				else:
+					log(__name__, 'Invalid Request - {} - {}'.format(client_addr[0] , client_message))
+
+			# ladder handler
+			elif client_json_type == 'ladder':
+				all_user_votes = sqlitemanager.user_vote_count()
+				if all_user_votes:
+					server_json['success'] = True
+					server_json['data'] = all_user_votes
+
 			# login handler
-			if client_json_type == 'login':
+			elif client_json_type == 'login':
 				client_logged_in = sqlitemanager.login_user(client_json_data['username'], client_json_data['secret'])
-				server_json['success'] = client_logged_in
 				if client_logged_in:
-					server_json['data'] = 'Login Successful'
+					server_json['success'] = True
+					server_json['data'] = client_logged_in
 				else:
 					server_json['data'] = 'Invalid Login - Check Username and Password'
 				log(__name__, 'Login User - {} - username:{} - success:{}'.format(client_addr[0], client_json_data['username'], client_logged_in))
@@ -105,23 +128,10 @@ def client_handler(client_conn, client_addr):
 					server_json['data'] = 'Registration Failed - Username might be taken'
 				log(__name__, 'Register User - {} - username:{} - success:{}'.format(client_addr[0], client_json_data['username'], success))
 
-			# system handler
-			elif client_json_type == 'system' and client_json_data == 'disconnect':
-					client_connected = False
-					server_json['success'] = True
-					server_json['data'] = 'Successfully Disconnected'
-
-			# ladder handler
-			elif client_json_type == 'ladder':
-				all_user_votes = sqlitemanager.user_vote_count()
-				if all_user_votes:
-					server_json['success'] = True
-					server_json['data'] = all_user_votes
-
 			# led vote handler - must be logged in
 			elif client_json_type == 'LED':
 				if client_logged_in:
-					success = sqlitemanager.vote(client_json_data['username'], client_json_data['led_id'])
+					success = sqlitemanager.vote(client_logged_in, client_json_data['led_id'])
 					server_json['success'] = success
 					if success:
 						Thread(target=ledmanager.blink, args=(client_json_data['led_id'],)).start()
