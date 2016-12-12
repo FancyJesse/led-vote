@@ -91,8 +91,8 @@ The program is continuous, so it will have to be forcefully stopped. (Will chang
 Release History
 ---------------
 * 0.4.5
-	* Added additional server request handler
-	* Now returns correctly cased username after successful login
+	* Added additional server request handlers
+	* Now returns correctly-cased username after successful login
 	* Reordered server request handlers
 * 0.4.0
 	* Adjusted initial setup logic so modules can be loaded individually
