@@ -1,16 +1,17 @@
 LED-Vote
----------
+========================================================================
+Navigation: [Client Repository](https://github.com/FancyJesse/led-vote-client)
 
+Introduction
+------------------------------------------------------------------------
 A Raspberry-Pi project written in Python that utilizes the GPIO board and network.
 A server is created and runs on a network. Users are then able to register an account and will
 have the option to vote for a color. The colors are predefined via the **config.py** file and 
 will correspond to an LED connected to the GPIO board. When a vote for a color is received, 
 the corresponding LED will blink. Votes are stored in a database and displayed on a webpage (TODO).
 
-
 Prerequisites
--------------
-
+------------------------------------------------------------------------
 Raspberry-Pi with GPIO pins
 
 Breadboard with LED lights
@@ -19,8 +20,7 @@ Python3
 
 
 Installation
-------------
-
+------------------------------------------------------------------------
 Before the installation, be sure to update & upgrade your current packages
 ```
 $ sudo apt-get update && sudo apt-get upgrade
@@ -45,14 +45,12 @@ $ git clone https://github.com/FancyJesse/led-vote
 
 
 Setup - GPIO
-------------
-
+------------------------------------------------------------------------
 TODO
 
 
 Usage
------
-
+------------------------------------------------------------------------
 Before executing the program, review and adjust the settings in **config.py**. The settings include the network name and port to listen to. As well as the GPIO pins to use with regards to the LEDs.
 ```
 $ cd
@@ -89,7 +87,7 @@ The program is continuous, so it will have to be forcefully stopped. (Will chang
 
 
 Release History
----------------
+------------------------------------------------------------------------
 * 0.4.5
 	* Added additional server request handlers
 	* Now returns correctly-cased username after successful login
@@ -107,12 +105,10 @@ Release History
 
 
 License
--------
-
+------------------------------------------------------------------------
 See the file "LICENSE" for license information.
 
 
 Authors
--------
-
+------------------------------------------------------------------------
 FancyJesse
