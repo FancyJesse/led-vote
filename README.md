@@ -2,6 +2,7 @@ LED-Vote
 ========================================================================
 Navigation: **Server repository** | [Client repository](https://github.com/FancyJesse/led-vote-client)
 
+
 Introduction
 ------------------------------------------------------------------------
 A Raspberry-Pi project written in Python that utilizes the GPIO board and network.
@@ -9,6 +10,7 @@ A server is created and runs on a network. Users are then able to register an ac
 have the option to vote for a color. The colors are predefined via the **config.py** file and 
 will correspond to an LED connected to the GPIO board. When a vote for a color is received, 
 the corresponding LED will blink. Votes are stored in a database and displayed on a webpage (TODO).
+
 
 Prerequisites
 ------------------------------------------------------------------------
