@@ -1,6 +1,6 @@
 LED-Vote
 ========================================================================
-Navigation: [Client Repository](https://github.com/FancyJesse/led-vote-client)
+Navigation: **Server repository** | [Client repository](https://github.com/FancyJesse/led-vote-client)
 
 Introduction
 ------------------------------------------------------------------------
