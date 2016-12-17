@@ -90,6 +90,9 @@ The program is continuous, so it will have to be forcefully stopped. (Will chang
 
 Release History
 ------------------------------------------------------------------------
+* 0.4.6
+	* Adjusted and added additional ladder handlers
+	* Renamed JSON keys
 * 0.4.5
 	* Added additional server request handlers
 	* Now returns correctly-cased username after successful login

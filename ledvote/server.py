@@ -101,8 +101,15 @@ def client_handler(client_conn, client_addr):
 				else:
 					log(__name__, 'Invalid Request - {} - {}'.format(client_addr[0] , client_message))
 
-			# ladder handler
-			elif client_json_type == 'ladder':
+			# led ladder handler
+			elif client_json_type == 'led_ladder':
+				all_led_votes = sqlitemanager.led_vote_count()
+				if all_led_votes:
+					server_json['success'] = True
+					server_json['data'] = all_led_votes
+
+			# user ladder handler
+			elif client_json_type == 'user_ladder':
 				all_user_votes = sqlitemanager.user_vote_count()
 				if all_user_votes:
 					server_json['success'] = True
@@ -129,7 +136,7 @@ def client_handler(client_conn, client_addr):
 				log(__name__, 'Register User - {} - username:{} - success:{}'.format(client_addr[0], client_json_data['username'], success))
 
 			# led vote handler - must be logged in
-			elif client_json_type == 'LED':
+			elif client_json_type == 'led':
 				if client_logged_in:
 					success = sqlitemanager.vote(client_logged_in, client_json_data['led_id'])
 					server_json['success'] = success
