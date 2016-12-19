@@ -90,6 +90,11 @@ The program is continuous, so it will have to be forcefully stopped. (Will chang
 
 Release History
 ------------------------------------------------------------------------
+* 0.4.7
+	* User can now save a note that is displayed publicly
+	* Added try-catch-finally to sqlitemanager's functions
+	* Renamed sqlitemanager's functions
+	* Renamed JSON keys
 * 0.4.6
 	* Adjusted and added additional ladder handlers
 	* Renamed JSON keys

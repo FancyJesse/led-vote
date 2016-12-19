@@ -110,14 +110,14 @@ def client_handler(client_conn, client_addr):
 
 			# user ladder handler
 			elif client_json_type == 'user_ladder':
-				all_user_votes = sqlitemanager.user_vote_count()
+				all_user_votes = sqlitemanager.user_data()
 				if all_user_votes:
 					server_json['success'] = True
 					server_json['data'] = all_user_votes
 
 			# login handler
 			elif client_json_type == 'login':
-				client_logged_in = sqlitemanager.login_user(client_json_data['username'], client_json_data['secret'])
+				client_logged_in = sqlitemanager.user_login(client_json_data['username'], client_json_data['secret'])
 				if client_logged_in:
 					server_json['success'] = True
 					server_json['data'] = client_logged_in
@@ -127,7 +127,7 @@ def client_handler(client_conn, client_addr):
 
 			# register handler
 			elif client_json_type == 'register':
-				success = sqlitemanager.register_user(client_json_data['username'], client_json_data['secret'])
+				success = sqlitemanager.user_register(client_json_data['username'], client_json_data['secret'])
 				server_json['success'] = success
 				if success:
 					server_json['data'] = 'Registration Successful - Please Login'
@@ -135,17 +135,29 @@ def client_handler(client_conn, client_addr):
 					server_json['data'] = 'Registration Failed - Username might be taken'
 				log(__name__, 'Register User - {} - username:{} - success:{}'.format(client_addr[0], client_json_data['username'], success))
 
-			# led vote handler - must be logged in
-			elif client_json_type == 'led':
+			# note handler - must be logged in
+			elif client_json_type == 'note':
 				if client_logged_in:
-					success = sqlitemanager.vote(client_logged_in, client_json_data['led_id'])
+					success = sqlitemanager.user_note(client_logged_in, client_json_data)
+					server_json['success'] = success
+					if success:
+						server_json['data'] = 'Note Saved'
+					else:
+						server_json['data'] = 'Unable to save note - Please log out and log in again'
+				else:
+					server_json['data'] = 'You must be logged in to do that'
+
+			# vote handler - must be logged in
+			elif client_json_type == 'vote':
+				if client_logged_in:
+					success = sqlitemanager.user_vote(client_logged_in, client_json_data['led_id'])
 					server_json['success'] = success
 					if success:
 						Thread(target=ledmanager.blink, args=(client_json_data['led_id'],)).start()
 						all_led_votes = sqlitemanager.led_vote_count()
 						server_json['data'] = all_led_votes
 					else:
-						server_json['data'] = 'Unable to process vote - Please log out and log in again'
+						server_json['data'] = 'Unable to process user_vote - Please log out and log in again'
 				else:
 					server_json['data'] = 'You must be logged in to do that'
 

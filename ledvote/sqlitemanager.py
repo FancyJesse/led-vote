@@ -16,11 +16,10 @@ CURSOR = None
 def setup():
 	global DATABASE, CURSOR
 
+	MUTEX.acquire()
 	try:
-		MUTEX.acquire()
-
 		if config.DIR_DATABASE == None:
-			config.DIR_DATABASE = os.path.expanduser('~') + '/led-vote/database/'
+			config.DIR_DATABASE = os.path.expanduser('~') + '/led-user_vote/database/'
 		if not os.path.exists(config.DIR_DATABASE):
 			os.makedirs(config.DIR_DATABASE)
 
@@ -34,7 +33,6 @@ def setup():
 					'last_login INTEGER DEFAULT 0,'
 					'note TEXT)'
 					)
-
 		# force add led_id columns
 		for led_id in [i[1] for i in config.LED_INFO]:
 			try:
@@ -54,9 +52,13 @@ def setup():
 def close():
 	global db
 	MUTEX.acquire()
-	DATABASE.commit()
-	DATABASE.close()
-	MUTEX.release()
+	try:
+		DATABASE.commit()
+		DATABASE.close()
+	except:
+		pass
+	finally:
+		MUTEX.release()
 	log(__name__, 'Database Disconnected')
 
 
@@ -67,80 +69,115 @@ def username_available(username):
 	return exist is None
 
 
-def register_user(username, secret):
-	MUTEX.acquire()
-	success = username_available(username)
-	if success:
-		h = bcrypt.hashpw(secret.encode(), bcrypt.gensalt())
-		query = 'INSERT INTO user (username, secret, date_created) values (?, ?, DATETIME("now","localtime"))'
-		CURSOR.execute(query, (username, h))
-		DATABASE.commit()
-	MUTEX.release()
-	return success
-
-
-def login_user(username, secret):
+def user_register(username, secret):
 	success = False
 	MUTEX.acquire()
-	query = 'SELECT username, secret FROM user WHERE username=?'
-	CURSOR.execute(query, (username,))
-	storedData = CURSOR.fetchone()
-	if storedData:
-		h = storedData[1]
-		success = bcrypt.hashpw(secret.encode(), h) == h
+	try:
+		success = username_available(username)
 		if success:
-			query = 'UPDATE user SET last_login=DATETIME("now","localtime"), login_count=login_count+1 WHERE username=?'
+			h = bcrypt.hashpw(secret.encode(), bcrypt.gensalt())
+			query = 'INSERT INTO user (username, secret, date_created) values (?, ?, DATETIME("now","localtime"))'
+			CURSOR.execute(query, (username, h))
+			DATABASE.commit()
+	except:
+		raise Exception('{} - Unable to Register User: {} '.format(__name__, username))
+	finally:
+		MUTEX.release()
+	return success
+
+
+def user_login(username, secret):
+	success = False
+	MUTEX.acquire()
+	try:
+		query = 'SELECT username, secret FROM user WHERE username=?'
+		CURSOR.execute(query, (username,))
+		storedData = CURSOR.fetchone()
+		if storedData:
+			h = storedData[1]
+			success = bcrypt.hashpw(secret.encode(), h) == h
+			if success:
+				query = 'UPDATE user SET last_login=DATETIME("now","localtime"), login_count=login_count+1 WHERE username=?'
+				CURSOR.execute(query, (username,))
+				DATABASE.commit()
+				success = storedData[0]
+	except:
+		raise Exception('{} - Unable to Login User: {} '.format(__name__, username))
+	finally:
+		MUTEX.release()
+	return success
+
+
+def user_note(username, note):
+	success = False
+	MUTEX.acquire()
+	try:
+		success = not username_available(username)
+		if success:
+			query = 'UPDATE user SET note=? WHERE username=?'
+			CURSOR.execute(query, (note, username))
+			DATABASE.commit()
+	except:
+		raise Exception('{} - Unable to Update User Note: {}|{} '.format(__name__, username, note))
+	finally:
+		MUTEX.release()
+	return success
+
+
+def user_vote(username, led_id):
+	success = False
+	MUTEX.acquire()
+	try:
+		success = not username_available(username)
+		if success:
+			query = 'UPDATE user SET {0}={0}+1 WHERE username=?'.format(led_id)
 			CURSOR.execute(query, (username,))
 			DATABASE.commit()
-			success = storedData[0]
-	MUTEX.release()
+	except:
+		raise Exception('{} - Unable to Update User Vote: {}|{} '.format(__name__, username, led_id))
+	finally:
+		MUTEX.release()
 	return success
 
 
-def vote(username, led_id):
+def user_data(username=None):
+	user_vote_dict_list = []
+	led_id_list = [i[1] for i in config.LED_INFO]
+	query = 'Select username, note, {0} FROM user'.format(', '.join(led_id_list))
 	MUTEX.acquire()
-	success = not username_available(username)
-	if success:
-		query = 'UPDATE user SET {0}={0}+1 WHERE username=?'.format(led_id)
-		CURSOR.execute(query, (username,))
-		DATABASE.commit()
-	MUTEX.release()
-	return success
+	try:
+		if username:
+			query = query + ' WHERE username=?'
+			CURSOR.execute(query, (username,))
+		else:
+			CURSOR.execute(query)
+		for user_info in CURSOR.fetchall():
+			user_dict = {}
+			user_dict['username'] = user_info[0]
+			user_dict['note'] = user_info[1]
+			for led_idx, led_id in enumerate(led_id_list, 2):
+				user_dict[led_id] = user_info[led_idx]
+			user_vote_dict_list.append(user_dict)
+	except:
+		raise Exception('{} - Unable to get User Data: {} '.format(__name__, username))
+	finally:
+		MUTEX.release()
+	return user_vote_dict_list
 
 
 def led_vote_count():
 	led_vote_dict = {}
-	for led_id in [i[1] for i in config.LED_INFO]:
-		query = 'Select sum({0}) FROM user'.format(led_id)
-		MUTEX.acquire()
-		CURSOR.execute(query)
-		vote_count = CURSOR.fetchone()[0]
-		if vote_count == None:
-			vote_count = 0
-		led_vote_dict[led_id] = vote_count
+	MUTEX.acquire()
+	try:
+		for led_id in [i[1] for i in config.LED_INFO]:
+			query = 'Select sum({0}) FROM user'.format(led_id)
+			CURSOR.execute(query)
+			vote_count = CURSOR.fetchone()[0]
+			if vote_count == None:
+				vote_count = 0
+			led_vote_dict[led_id] = vote_count
+	except:
+		raise Exception('{} - Unable to get LED Vote Count'.format(__name__))
+	finally:
 		MUTEX.release()
 	return led_vote_dict
-
-
-def user_vote_count(username=None):
-	user_vote_dict_list = []
-
-	led_id_list = [i[1] for i in config.LED_INFO]
-	query = 'Select username, {0} FROM user'.format(', '.join(led_id_list))
-	MUTEX.acquire()
-
-	if username:
-		query = query + ' WHERE username=?'
-		CURSOR.execute(query, (username,))
-	else:
-		CURSOR.execute(query)
-
-	for user_info in CURSOR.fetchall():
-		user_dict = {}
-		user_dict['username'] = user_info[0]
-		for led_idx, led_id in enumerate(led_id_list, 1):
-			user_dict[led_id] = user_info[led_idx]
-		user_vote_dict_list.append(user_dict)
-
-	MUTEX.release()
-	return user_vote_dict_list
