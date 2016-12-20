@@ -19,7 +19,7 @@ def setup():
 	MUTEX.acquire()
 	try:
 		if config.DIR_DATABASE == None:
-			config.DIR_DATABASE = os.path.expanduser('~') + '/led-user_vote/database/'
+			config.DIR_DATABASE = os.path.expanduser('~') + '/led-vote/database/'
 		if not os.path.exists(config.DIR_DATABASE):
 			os.makedirs(config.DIR_DATABASE)
 
