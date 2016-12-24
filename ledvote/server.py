@@ -14,6 +14,7 @@ TIME_STARTED = ''
 SERVER_HOSTNAME = ''
 SERVER_SOCKET = None
 LISTENING = True
+CLIENT_LIST = []
 
 
 def setup():
@@ -53,6 +54,21 @@ def setup():
 		raise Exception('{} - {}'.format(__name__, e))
 
 
+def start():
+	global TIME_STARTED, SERVER_SOCKET, SERVER_HOSTNAME
+
+	log(__name__, 'Server Online - {}@{}:{}'.format(SERVER_HOSTNAME , config.SERVER_ADDRESS, config.SERVER_PORT))
+	SERVER_SOCKET.listen(5)
+
+	# listen for clients - timeout:5mins
+	while LISTENING:
+		client_conn, client_addr = SERVER_SOCKET.accept()
+		client_conn.settimeout(300)
+		if LISTENING:
+			log(__name__, 'Client Connection Accepted - {}'.format(client_addr[0]))
+			Thread(target=client_handler, args=(client_conn, client_addr)).start()
+
+
 def stop():
 	global SERVER_SOCKET
 	SERVER_SOCKET.close()
@@ -68,9 +84,12 @@ def get_up_time():
 
 
 def client_handler(client_conn, client_addr):
+	global CLIENT_LIST
+
 	try:
 		client_logged_in = False
 		client_connected = True
+		CLIENT_LIST.append(client_conn)
 
 		while client_connected:
 
@@ -173,22 +192,8 @@ def client_handler(client_conn, client_addr):
 
 	finally:
 		client_conn.close()
+		CLIENT_LIST.remove(client_conn)
 		log(__name__, 'Client Connection Closed - {}'.format(client_addr[0]))
-
-
-def start():
-	global TIME_STARTED, SERVER_SOCKET, SERVER_HOSTNAME
-
-	log(__name__, 'Server Online - {}@{}:{}'.format(SERVER_HOSTNAME , config.SERVER_ADDRESS, config.SERVER_PORT))
-	SERVER_SOCKET.listen(5)
-
-	# listen for clients - timeout:5mins
-	while LISTENING:
-		client_conn, client_addr = SERVER_SOCKET.accept()
-		client_conn.settimeout(300)
-		if LISTENING:
-			log(__name__, 'Client Connection Accepted - {}'.format(client_addr[0]))
-			Thread(target=client_handler, args=(client_conn, client_addr)).start()
 
 
 # Unix system call
@@ -199,6 +204,5 @@ def get_ip_address(ifname):
 	return socket.inet_ntoa(fcntl.ioctl(
 		s.fileno(),
 		0x8915,  # SIOCGIFADOR
-		# struct.pack( '256s', ifname[:15] ) # python2.7
-		struct.pack('256s', bytes(ifname[:15], 'utf-8'))  # python3
+		struct.pack('256s', bytes(ifname[:15], 'utf-8'))
 		)[20:24])

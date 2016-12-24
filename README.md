@@ -90,6 +90,9 @@ The program is continuous, so it will have to be forcefully stopped. (Will chang
 
 Release History
 ------------------------------------------------------------------------
+* 0.4.8
+	* Add client connections to global list
+	* Rearranged function ordering in server module
 * 0.4.7
 	* User can now save a note that is displayed publicly
 	* Added try-catch-finally to sqlitemanager's functions
