@@ -90,6 +90,8 @@ The program is continuous, so it will have to be forcefully stopped. (Will chang
 
 Release History
 ------------------------------------------------------------------------
+* 0.4.9
+	* Added chatroom handler (work in progress)
 * 0.4.8
 	* Add client connections to global list
 	* Rearranged function ordering in server module

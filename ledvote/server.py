@@ -103,6 +103,7 @@ def client_handler(client_conn, client_addr):
 			server_json = {}
 			server_json['author'] = 'LED-Vote--Server'
 			server_json['success'] = False
+			server_json['type'] = client_json['type']
 			server_json['data'] = 'Server Unable to Handle Request'
 
 			# system handler
@@ -163,6 +164,16 @@ def client_handler(client_conn, client_addr):
 						server_json['data'] = 'Note Saved'
 					else:
 						server_json['data'] = 'Unable to save note - Please log out and log in again'
+				else:
+					server_json['data'] = 'You must be logged in to do that'
+
+			# note handler - must be logged in
+			elif client_json_type == 'chatroom':
+				if client_logged_in:
+					server_json['data']['sender'] = client_logged_in
+					server_json['data']['time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+					server_json['data']['message'] = client_json_data
+					server_json['success'] = True
 				else:
 					server_json['data'] = 'You must be logged in to do that'
 
