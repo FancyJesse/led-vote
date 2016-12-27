@@ -170,6 +170,7 @@ def client_handler(client_conn, client_addr):
 			# note handler - must be logged in
 			elif client_json_type == 'chatroom':
 				if client_logged_in:
+					server_json['data'] = {}
 					server_json['data']['sender'] = client_logged_in
 					server_json['data']['time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 					server_json['data']['message'] = client_json_data
