@@ -130,7 +130,7 @@ def client_handler(client_conn, client_addr):
 
 			# user ladder handler
 			elif client_json_type == 'user_ladder':
-				all_user_votes = sqlitemanager.user_data()
+				all_user_votes = sqlitemanager.user_data(client_json_data)
 				if all_user_votes:
 					server_json['success'] = True
 					server_json['data'] = all_user_votes
