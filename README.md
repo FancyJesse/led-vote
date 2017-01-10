@@ -2,6 +2,9 @@ LED-Vote
 ========================================================================
 Navigation: **Server repository** | [Client repository](https://github.com/FancyJesse/led-vote-client)
 
+[![status](https://img.shields.io/badge/Project%20Status-work--in--progress-green.svg)](#)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=jesus_andrade45%40yahoo%2ecom&lc=US&item_name=GitHub%20Projects&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+
 
 Introduction
 ------------------------------------------------------------------------
