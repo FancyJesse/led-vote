@@ -50,7 +50,6 @@ def setup():
 
 
 def close():
-	global db
 	MUTEX.acquire()
 	try:
 		DATABASE.commit()
