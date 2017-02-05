@@ -3,11 +3,11 @@ import json
 import sys
 
 from logger import log
+import ledmanager
+import server
 import sqlitemanager
 
 
-# import ledmanager
-# import server
 def main():
 	try:
 		sqlitemanager.setup()
@@ -29,7 +29,7 @@ def total_votes():
 
 
 def top_users():
-	return True, sqlitemanager.led_vote_count()
+	return True, sqlitemanager.top_users()  # TODO
 
 
 def register_user(username, secret):
