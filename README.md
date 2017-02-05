@@ -5,6 +5,11 @@ Navigation: **Server repository** | [Client repository](https://github.com/Fancy
 [![status](https://img.shields.io/badge/Project%20Status-work--in--progress-green.svg)](#)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=jesus_andrade45%40yahoo%2ecom&lc=US&item_name=GitHub%20Projects&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
 
+Users register, login, and vote for an LED color. Once a vote is received, it is saved to a database, and the corresponding LED color blinks on the connected Raspberry-PI GPIO board.
+
+####Current webpage: [ledvote.fancyjesse.com](http://ledvote.fancyjesse.com)
+
+
 
 Introduction
 ------------------------------------------------------------------------
