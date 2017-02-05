@@ -26,13 +26,13 @@ def setup():
 		DATABASE = sqlite3.connect(config.DIR_DATABASE + 'LED-Vote.db', check_same_thread=False)
 		CURSOR = DATABASE.cursor()
 		CURSOR.execute('CREATE TABLE IF NOT EXISTS user ('
-					'username TEXT PRIMARY KEY COLLATE NOCASE,'
-					'secret TEXT NOT NULL,'
-					'date_created INTEGER DEFAULT 0,'
-					'login_count INTEGER DEFAULT 0,'
-					'last_login INTEGER DEFAULT 0,'
-					'note TEXT)'
-					)
+			'username TEXT PRIMARY KEY COLLATE NOCASE,'
+			'secret TEXT NOT NULL,'
+			'date_created INTEGER DEFAULT 0,'
+			'login_count INTEGER DEFAULT 0,'
+			'last_login INTEGER DEFAULT 0,'
+			'note TEXT)'
+			)
 		# force add led_id columns
 		for led_id in [i[1] for i in config.LED_INFO]:
 			try:
@@ -118,6 +118,22 @@ def user_note(username, note):
 			DATABASE.commit()
 	except:
 		raise Exception('{} - Unable to Update User Note: {}|{} '.format(__name__, username, note))
+	finally:
+		MUTEX.release()
+	return success
+
+
+def user_rename(old_username, new_username):
+	success = False
+	MUTEX.acquire()
+	try:
+		success = not username_available(old_username)
+		if success:
+			query = 'UPDATE user SET username=? WHERE username=?'
+			CURSOR.execute(query, (new_username, old_username))
+			DATABASE.commit()
+	except:
+		raise Exception('{} - Unable to Update Username: {} -> {} '.format(__name__, old_username, new_username))
 	finally:
 		MUTEX.release()
 	return success

@@ -58,13 +58,11 @@ Usage
 ------------------------------------------------------------------------
 Before executing the program, review and adjust the settings in **config.py**. The settings include the network name and port to listen to. As well as the GPIO pins to use with regards to the LEDs.
 ```
-$ cd
 $ nano config.py
 ```
 
 To execute the program, simply call **ledvote.py**
 ```
-$ cd
 $ ./ledvote.py
 ```
 
@@ -83,16 +81,53 @@ View a list of screens currently running:
 $ screen -ls
 ```
 
-To reattach the screen use:
+To re-attach the screen use:
 ```
 $ screen -r [screen-name]
 ```
 
 The program is continuous, so it will have to be forcefully stopped. (Will change with later versions)
 
+Below are the available console commands
+
+Register a new user in the database:
+```
+$ python3 ./ledvote.py -register [username] [password]
+```
+
+Dump top users stored in the database:
+```
+$ python3 ./ledvote.py -top
+```
+
+Dump LED votes stored in the database:
+```
+$ python3 ./ledvote.py -votes
+```
+
+Rename a user in the database:
+```
+$ python3 ./ledvote.py -rename [old_username] [new_useranme]
+```
+
+Dump specific user data stored in the database:
+```
+$ python3 ./ledvote.py -stats [username]
+```
+
+Dump all user data stored in the database:
+```
+$ python3 ./ledvote.py -d
+```
+
+*Note: All console commands data returned is of type JSON*
+
+
 
 Release History
 ------------------------------------------------------------------------
+* 0.5.0
+	* Added command line arguement support
 * 0.4.9
 	* Added chatroom handler (work in progress)
 * 0.4.8

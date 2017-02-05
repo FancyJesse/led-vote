@@ -1,9 +1,8 @@
 from threading import Lock
 from time import sleep
 
-import RPi.GPIO as GPIO
-
 from logger import log
+import RPi.GPIO as GPIO
 import config
 
 
@@ -36,21 +35,16 @@ def blink(led_id):
 			led.blink()
 			break
 
-
 class LED:
-
 	def __init__(self, led_info):
 		self.pin = led_info[0]
 		self.id = led_info[1]
 		self.mutex = Lock()
 		GPIO.setup(self.pin, GPIO.OUT)
-
 	def on(self):
 		GPIO.output(self.pin, True)
-
 	def off(self):
 		GPIO.output(self.pin, False)
-
 	def blink(self):
 		self.mutex.acquire()
 		self.on()
