@@ -86,9 +86,9 @@ To re-attach the screen use:
 $ screen -r [screen-name]
 ```
 
-The program is continuous, so it will have to be forcefully stopped. (Will change with later versions)
+*The program is continuous, so it will have to be forcefully stopped. (Will change with later versions)*
 
-Below are the available console commands
+###Below are the available console commands
 
 Register a new user in the database:
 ```
