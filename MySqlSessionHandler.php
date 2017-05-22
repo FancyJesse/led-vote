@@ -39,7 +39,7 @@ class MySqlSessionHandler{
 		$query = 'UPDATE led SET ' . $color_id . '='. $color_id . '+1 WHERE user_id=?';
 		$stmt = $this->DB_CONN->prepare($query);
 		if($stmt && $result = $stmt->bind_param('i', $user_id)){
-			return $stmt->bind_param('i', $user_id);
+			return $stmt->execute();
 		}
 		return false;
 	}
