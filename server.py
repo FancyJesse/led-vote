@@ -161,3 +161,12 @@ class Client:
 		return message
 	def disconnect(self):
 		self.conn.close()
+
+
+if __name__ == '__main__':
+	try:
+		led.setup()
+		start()
+	finally:
+		stop()
+		led.cleanup()
