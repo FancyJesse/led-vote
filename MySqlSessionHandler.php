@@ -16,45 +16,45 @@ class MySqlSessionHandler{
 		return $this->DB_CONN->close();
 	}
 
-        public function user_info($username){
-                $query = 'SELECT * From user WHERE username=?';
-                $stmt = $this->DB_CONN->prepare($query);
-                $stmt->bind_param('s', $username);
-                $stmt->execute();
-                return $stmt->get_result();
-        }
+	public function user_info($username){
+		$query = 'SELECT * FROM user WHERE username=?';
+		$stmt = $this->DB_CONN->prepare($query);
+		$stmt->bind_param('s', $username);
+		$stmt->execute();
+		return $stmt->get_result()->fetch_array(MYSQL_ASSOC);
+	}
 
-        public function user_register($username, $secret){
-                $user_info = $this->user_info($username)->fetch_array(MYSQL_ASSOC);
-                if(!$user_info){
-                        $query =
-                                'INSERT INTO user (username, secret, date_created, last_login)
-                                VALUES (?, ?, NOW(), NOW())';
-                        $stmt = $this->DB_CONN->prepare($query);
-                        $stmt->bind_param('ss', $username, password_hash($secret, PASSWORD_BCRYPT));
-                        $stmt->execute();
-                        $user_info = $this->user_info($username)->fetch_array(MYSQL_ASSOC);
-                        unset($user_info['secret']);
-                        return $user_info;
-                }
-                return false;
-        }
+	public function user_register($username, $secret){
+		$user_info = $this->user_info($username);
+		if(!$user_info){
+			$query =
+				'INSERT INTO user (username, secret, date_created, last_login)
+				VALUES (?, ?, NOW(), NOW())';
+			$stmt = $this->DB_CONN->prepare($query);
+			$stmt->bind_param('ss', $username, password_hash($secret, PASSWORD_BCRYPT));
+			$stmt->execute();
+			$user_info = $this->user_info($username);
+			unset($user_info['secret']);
+			return $user_info;
+		}
+		return false;
+	}
 
-        public function user_login($username, $secret){
-                $user_info = $this->user_info($username)->fetch_array(MYSQL_ASSOC);
-                if(password_verify($secret, $user_info['secret'])){
-                        $query = 'UPDATE user SET last_login=NOW() WHERE username=?';
-                        $stmt = $this->DB_CONN->prepare($query);
-                        $stmt->bind_param('s', $username);
-                        $stmt->execute();
-                        unset($user_info['secret']);
-                        return $user_info;
-                }
-                return false;
-        }
+	public function user_login($username, $secret){
+		$user_info = $this->user_info($username);
+		if(password_verify($secret, $user_info['secret'])){
+			$query = 'UPDATE user SET last_login=NOW() WHERE username=?';
+			$stmt = $this->DB_CONN->prepare($query);
+			$stmt->bind_param('s', $username);
+			$stmt->execute();
+			unset($user_info['secret']);
+			return $user_info;
+		}
+		return false;
+	}
 
 	public function led_total_votes(){
-		$query = 'SELECT * FROM led';
+		$query = 'SELECT user.username, led.* FROM led JOIN user ON user.user_id=led.user_id';
 		return $this->DB_CONN->query($query);
 	}
 
