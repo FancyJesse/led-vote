@@ -148,7 +148,7 @@
                         if(verify()){
                                 var username = document.getElementById('entry_username').value.trim();
                                 var secret = document.getElementById('entry_secret').value.trim();
-                                $.post('login.php', {'username':username, 'secret':secret},
+                                $.post('scripts/login.php', {'username':username, 'secret':secret},
                                         function(data){
                                                 if(data!=0){
 							loggedIn(data);
@@ -176,7 +176,7 @@
                                         notifier.innerHTML="Passwords do not match.";
                                         return false;
                                 }
-                                $.post('register.php', {'username':username, 'secret':secret, 'secret_verify':secret_verify},
+                                $.post('scripts/register.php', {'username':username, 'secret':secret, 'secret_verify':secret_verify},
                                         function(data){
                                                 if(data!=0){
 							loggedIn(data);
@@ -193,7 +193,7 @@
 		function updateTables(){
 			$.ajax({
 				type: 'POST',
-				url: 'update.php',
+				url: 'scripts/update.php',
 				dataType: 'json',
 				data: {'user_id':user_id},
 				success: function (data) {
@@ -283,7 +283,7 @@
 		function vote(color){
 			$.ajax({
 				type: 'POST',
-				url: 'vote.php',
+				url: 'scripts/vote.php',
 				dataType: 'json',
 				data: {'user_id':user_id, 'color_id':color},
 				success: function (data) {
