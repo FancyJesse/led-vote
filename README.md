@@ -67,6 +67,15 @@ Setup - GPIO
 TODO
 
 
+Setup - Database
+------------------------------------------------------------------------
+In order to track votes, an SQL tables are required.
+These tables can be automatically created my running **InitTables.php**.
+```
+$ php php/scripts/InitTables.php 
+```
+
+
 Usage
 ------------------------------------------------------------------------
 Before executing the program, review and adjust the settings in **config.py**. The settings include the network name and port to listen to. As well as the GPIO pins to use with regards to the LEDs.

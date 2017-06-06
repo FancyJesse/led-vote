@@ -16,6 +16,32 @@ class MySqlSessionHandler{
 		return $this->DB_CONN->close();
 	}
 
+	public function init_tables(){
+		$user_query = "CREATE TABLE IF NOT EXISTS `user` (
+			`user_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			`username` varchar(15) NOT NULL,
+			`secret` binary(60) NOT NULL,
+			`date_created` datetime NOT NULL,
+			`last_login` datetime NOT NULL,
+			PRIMARY KEY (`user_id`),
+			UNIQUE KEY `username_UNIQUE` (`username`)
+			)";
+		$led_query = "CREATE TABLE IF NOT EXISTS `led` (
+			`user_id` int(10) unsigned NOT NULL,
+			`white` int(10) unsigned NOT NULL DEFAULT '0',
+			`orange` int(10) unsigned NOT NULL DEFAULT '0',
+			`yellow` int(10) unsigned NOT NULL DEFAULT '0',
+			`green` int(10) unsigned NOT NULL DEFAULT '0',
+			`blue` int(10) unsigned NOT NULL DEFAULT '0',
+			`cyan` int(10) unsigned NOT NULL DEFAULT '0',
+			`purple` int(10) unsigned NOT NULL DEFAULT '0',
+			`red` int(10) unsigned NOT NULL DEFAULT '0',
+			PRIMARY KEY (`user_id`)
+			)";
+		$this->DB_CONN->query($user_query);
+		$this->DB_CONN->query($led_query);
+	}
+
 	public function user_info($username){
 		$query = 'SELECT * FROM user WHERE username=?';
 		$stmt = $this->DB_CONN->prepare($query);
