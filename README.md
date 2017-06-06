@@ -46,19 +46,17 @@ Before the installation, be sure to update & upgrade your current packages
 $ apt-get update && apt-get upgrade
 ```
 
-Be sure you have RPi.GPIO package installed
+Install the RPi.GPIO package
 ```
 $ apt-get install rpi.gpio
 ```
 
-MySQL is required for vote tracking
+Install MySQL (required for vote tracking)
 ```
-apt-get install mysql-server --fix-missing 
+$ apt-get install mysql-server --fix-missing 
 ```
 
-To download the LED-Vote project use the following:
-
-git
+Clone the LED-Vote project
 ```
 $ git clone https://github.com/FancyJesse/led-vote
 ```
@@ -87,7 +85,7 @@ Once a request is accepted, the corresponding LED will blink.
 $ python3 ./server.py
 ```
 
-A sample webpage and scripts is provided in the [php folder](php). Simply visit index.php.
+A sample webpage and scripts is provided in the [php folder](php).
 
 
 License
