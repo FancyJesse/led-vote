@@ -10,7 +10,7 @@ LED_LIST = []
 
 
 def setup():
-	global LED_CONNECTED, LED_LIST
+	global LED_LIST
 	GPIO.setmode(GPIO.BCM)
 	for led_info in config.led_info:
 		try:
