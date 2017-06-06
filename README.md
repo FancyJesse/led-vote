@@ -11,13 +11,21 @@ Users register, login, and vote for an LED color. Once a vote is received, it is
 
 Introduction
 ------------------------------------------------------------------------
-A Raspberry-Pi project written in Python that utilizes the GPIO board and network.
-A server is created and provides connect clients with a list of LED colors.
-The colors are predefined via the **config.py** file and will correspond to an LED connected to the GPIO board.
-The client has the ability to select an LED color, and once it is selected, the corresponding LED will blink on the GPIO board.
+A Raspberry-Pi project written in Python that utilizes the GPIO board and network capabilities.
+The GPIO board is configured with multiple LEDs that correspond with the **config.py** file.
+The LED ID and GPIO-pin number are identified as well within this file.
+This configuration allows LEDs to be manipulated and handled through the **led.py** script.
 
-Clients are also able to register a username to track their selections, and the selections of every other participant.
-These values are presented via a [webpage](http://ledvote.fancyjesse.com).
+A server script is also provided, which handles clients requesting to handle the LEDs.
+Once a client is connected, the server listens for a JSON message which identifies a valid ID for the LED (defined in **config.py**), then calls the corresponding LED to blink.
+
+In addition to the server, clients are also able to send LED blink requests through a dynamic webpage.
+This webpage provides clients buttons that correspond to the available LEDs. Once a button is click, a connection is established to the server and the JSON message for the LED to blink is sent. 
+
+LED selections are also recorded and stored on a database. Clients are able to register and login to track their LED selections.
+The webpage mentioned earlier displays statistics about the LED selections, such as the LED colors most selected and top contributors.
+
+See a working example of this project on this [webpage](http://ledvote.fancyjesse.com).
 
 
 Prerequisites
@@ -27,6 +35,8 @@ Raspberry-Pi with GPIO pins
 Breadboard with LEDs
 
 Python3
+
+MySQL
 
 
 Installation
@@ -41,9 +51,9 @@ Be sure you have RPi.GPIO package installed
 $ apt-get install rpi.gpio
 ```
 
-Project also requires bcrypt
+MySQL is required for vote tracking
 ```
-$ pip install bcrypt
+apt-get install mysql-server --fix-missing 
 ```
 
 To download the LED-Vote project use the following:
@@ -63,17 +73,21 @@ Usage
 ------------------------------------------------------------------------
 Before executing the program, review and adjust the settings in **config.py**. The settings include the network name and port to listen to. As well as the GPIO pins to use with regards to the LEDs.
 
+*Note: If the server port number is changed, be sure to also update it in vote.php*
+
 Once your settings are set, execute **led.py** directly to test out the LEDs.
 This should give you an idea of whether your GPIO settings are configured correctly.
 ```
 $ python3 ./led.py
 ```
 
-Begin the server to start listening for LED requests.
+Begin the server to start listening for LED requests from clients.
 Once a request is accepted, the corresponding LED will blink.
 ```
 $ python3 ./server.py
 ```
+
+A sample webpage and scripts is provided in the [php folder](php). Simply visit index.php.
 
 
 License
