@@ -51,9 +51,10 @@ Install the RPi.GPIO package
 $ apt-get install rpi.gpio
 ```
 
-Install MySQL (required for vote tracking)
+Install MySQL and driver (required for vote tracking)
 ```
 $ apt-get install mysql-server --fix-missing 
+$ apt-get install php5-mysqlnd
 ```
 
 Clone the LED-Vote project
