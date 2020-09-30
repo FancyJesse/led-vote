@@ -5,7 +5,7 @@ LED-Vote
 
 Users register, login, and vote for an LED color. Once a vote is received, it is saved to a database, and the corresponding LED color blinks on the connected Raspberry-PI GPIO board.
 
-**Current webpage:** [ledvote.fancyjesse.com](http://ledvote.fancyjesse.com)
+**Current webpage:** [Click here](https://idleuser.com/projects/led-vote/)
 
 
 
@@ -105,4 +105,4 @@ See the file "LICENSE" for license information.
 
 Authors
 ------------------------------------------------------------------------
-FancyJesse
+idle-user
